@@ -59,6 +59,22 @@ namespace file_handler {
 			return file.good();
 		};
 
+		string getLine_file() {
+			if (this->mode == 0)
+				return "";
+			string ret;
+			getline(this->file, ret);
+			return ret;
+		}
+
+		void setPos(int pos) {
+			this->file.seekp(pos);
+		}
+
+		bool writeLine(string line) {
+			this->file << line << endl;
+		}
+
 		/// <summary>
 		/// Write a byte to a file
 		/// </summary>

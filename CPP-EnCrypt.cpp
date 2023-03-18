@@ -42,9 +42,6 @@ int main(int argc, char* argv[])
         if (curArg.substr(0, 3) == "-f#" && in_file == "") {
             in_file = curArg.substr(curArg.find("#") + 1, curArg.length());
         }
-        else if (curArg.substr(0, 3) == "-o#" && password == "") {
-            out_file = curArg.substr(curArg.find("#") + 1, curArg.length());
-        }
         else if (curArg.substr(0, 3) == "-p#" && password == "") {
             password = curArg.substr(curArg.find("#") + 1, curArg.length());
         }
@@ -74,19 +71,11 @@ int main(int argc, char* argv[])
         cout << "Invalid arguments, mode missing" << endl;
         return 1;
     }
-    if (enMode && out_file != ""){
-        cout << "Invalid arguments, output is not requried during encrypt" << endl;
-        return 1;
-    }
-    if (!enMode && out_file == "") {
-        cout << "Invalid arguments, output missing" << endl;
-        return 1;
-    }
 
-    if(enMode && out_file == "")
+    if (enMode && out_file == "") {
         out_file = in_file.substr(0, in_file.find_last_of(".")) + ".enc";
-
-    cout << "Output file is " << out_file << endl;
+        cout << "Output file is " << out_file << endl;
+    }
 
     int salt = 0;
     for (int i = 0; i < password.length(); i++) {
@@ -95,17 +84,33 @@ int main(int argc, char* argv[])
     cout << "Password converted to salt" << endl;
 
     FileHandle input = FileHandle(in_file, FileMode::read);
-    cout << input.fileLen << " bytes to proccess" << endl;
-    FileHandle output = FileHandle(out_file, FileMode::write);
-    time_t start = std::time(nullptr);
+    cout << input.fileLen << " bytes to process" << endl;
     if (!input.open) {
         cout << "Error with input file, see above" << endl;
         return 1;
     }
+    if (!enMode) {
+        string hold = input.getLine_file();
+        if (hold.find("=-FILE-=") != string::npos) {
+            out_file = hold.substr(hold.find_last_of("=")+1, hold.length() - 1);
+            cout << "Output file is " << out_file << endl;
+        }
+        else {
+            cout << "Invalid input file for decrypting";
+            return 1;
+        }
+    }
+    
+    FileHandle output = FileHandle(out_file, FileMode::write);
+    
     if (!output.open) {
         cout << "Error with output file, see above" << endl;
         return 1;
     }
+    if(enMode) {
+        output.writeLine("=-FILE-=" + in_file);
+    }
+    time_t start = std::time(nullptr);
     for (int i = 0; i < input.fileLen; i++) {
         if (i % 4 == 0) {
             cout << "Completed " << i << " bytes" << endl;
