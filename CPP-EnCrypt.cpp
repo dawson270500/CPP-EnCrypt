@@ -3,7 +3,7 @@
 #include <string>
 #include "FileHandle.h"
 
-const string version = "1.0";
+const string version = "1.1";
 
 using namespace std;
 using namespace file_handler;
