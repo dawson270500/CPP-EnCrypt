@@ -3,7 +3,7 @@ A basic encryption program that can be used from the command line.
 
 # Features
  - Encrypt files into .enc files
- - Decrypt files back, current stable version does not know the original file name so it must be specified 
+ - Decrypt files back into the original file using a password
 
 # Usage
 
